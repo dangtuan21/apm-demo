@@ -42,7 +42,7 @@ services:
     container_name: apm-tempo
     command: [ "-config.file=/etc/tempo.yaml" ]
     volumes:
-      - ./monitoring/tempo-final.yaml:/etc/tempo.yaml
+      - ./monitoring/tempo-docker.yaml:/etc/tempo.yaml
     ports:
       - "0.0.0.0:3200:3200"   # Tempo - bind to all interfaces
       - "0.0.0.0:4317:4317"   # OTLP gRPC receiver
