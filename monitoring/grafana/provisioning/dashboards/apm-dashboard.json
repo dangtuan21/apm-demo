@@ -1,0 +1,239 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "APM Backend Monitoring with Restart Tracking",
+    "tags": ["apm", "nodejs", "restarts"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "🔄 Total Restarts Today",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "app_restarts_total{app=\"apm-backend\"}",
+            "legendFormat": "Restarts"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"},
+            "custom": {"displayMode": "basic"},
+            "unit": "short"
+          }
+        },
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "⏱️ Uptime Since Last Restart",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "app_uptime_seconds{app=\"apm-backend\"}",
+            "legendFormat": "Uptime"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"},
+            "custom": {"displayMode": "basic"},
+            "unit": "s"
+          }
+        },
+        "gridPos": {"h": 4, "w": 6, "x": 6, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "📊 Request Rate (Current)",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "app_request_rate_current{app=\"apm-backend\"}",
+            "legendFormat": "Req/sec"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"},
+            "custom": {"displayMode": "basic"},
+            "unit": "reqps"
+          }
+        },
+        "gridPos": {"h": 4, "w": 6, "x": 12, "y": 0}
+      },
+      {
+        "id": 4,
+        "title": "🚨 Restarts in Last Hour",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "resets(http_requests_total{app=\"apm-backend\",route=\"/metrics\"}[1h])",
+            "legendFormat": "Restarts/hour"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "thresholds"},
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": 0},
+                {"color": "yellow", "value": 1},
+                {"color": "red", "value": 3}
+              ]
+            },
+            "unit": "short"
+          }
+        },
+        "gridPos": {"h": 4, "w": 6, "x": 18, "y": 0}
+      },
+      {
+        "id": 5,
+        "title": "📈 Request Counter Timeline (Shows Restarts)",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "http_requests_total{app=\"apm-backend\",route=\"/metrics\"}",
+            "legendFormat": "Metrics Requests (Restart Drops Visible)"
+          },
+          {
+            "expr": "http_requests_total{app=\"apm-backend\",route=\"/chat\"}",
+            "legendFormat": "Chat Requests"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"},
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "linear",
+              "lineWidth": 2,
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "spanNulls": false,
+              "insertNulls": false,
+              "showPoints": "auto",
+              "pointSize": 5
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 4}
+      },
+      {
+        "id": 6,
+        "title": "🔄 Restart Detection Timeline",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "resets(http_requests_total{app=\"apm-backend\",route=\"/metrics\"}[5m])",
+            "legendFormat": "Restart Events"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "fixed", "fixedColor": "red"},
+            "custom": {
+              "drawStyle": "bars",
+              "lineWidth": 1,
+              "fillOpacity": 80,
+              "gradientMode": "none"
+            },
+            "unit": "short"
+          }
+        },
+        "gridPos": {"h": 6, "w": 12, "x": 0, "y": 12}
+      },
+      {
+        "id": 7,
+        "title": "⚡ Request Rate (Smooth)",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(http_requests_total{app=\"apm-backend\"}[5m])",
+            "legendFormat": "{{method}} {{route}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"},
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "smooth",
+              "lineWidth": 2,
+              "fillOpacity": 20
+            },
+            "unit": "reqps"
+          }
+        },
+        "gridPos": {"h": 6, "w": 12, "x": 12, "y": 12}
+      },
+      {
+        "id": 8,
+        "title": "🧠 Memory Usage",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "memory_usage_bytes{app=\"apm-backend\",type=\"heap_used\"}",
+            "legendFormat": "Heap Used"
+          },
+          {
+            "expr": "memory_usage_bytes{app=\"apm-backend\",type=\"rss\"}",
+            "legendFormat": "RSS"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"},
+            "custom": {
+              "drawStyle": "line",
+              "lineWidth": 2,
+              "fillOpacity": 10
+            },
+            "unit": "bytes"
+          }
+        },
+        "gridPos": {"h": 6, "w": 12, "x": 0, "y": 18}
+      },
+      {
+        "id": 9,
+        "title": "💻 CPU Usage",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "cpu_usage_percent{app=\"apm-backend\"}",
+            "legendFormat": "CPU Usage %"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"},
+            "custom": {
+              "drawStyle": "line",
+              "lineWidth": 2,
+              "fillOpacity": 20
+            },
+            "unit": "percent",
+            "max": 100
+          }
+        },
+        "gridPos": {"h": 6, "w": 12, "x": 12, "y": 18}
+      }
+    ],
+    "time": {"from": "now-1h", "to": "now"},
+    "refresh": "5s",
+    "annotations": {
+      "list": [
+        {
+          "name": "Application Restarts",
+          "datasource": "Prometheus",
+          "enable": true,
+          "expr": "resets(http_requests_total{app=\"apm-backend\",route=\"/metrics\"}[5m]) > 0",
+          "iconColor": "red",
+          "lineColor": "red",
+          "titleFormat": "App Restart",
+          "textFormat": "Application restarted"
+        }
+      ]
+    }
+  }
+}
