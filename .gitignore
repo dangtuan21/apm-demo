@@ -100,3 +100,14 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp
+
+# Large binary files and downloads
+jaeger-*
+*.tar.gz
+*.zip
+*.dmg
+
+# Docker volumes and data
+prometheus_data/
+grafana_data/
+tempo_data/
