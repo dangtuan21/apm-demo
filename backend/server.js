@@ -1,3 +1,6 @@
+// Initialize tracing FIRST (before any other imports)
+require('./tracing');
+
 const express = require('express');
 const cors = require('cors');
 const { 
@@ -11,6 +14,9 @@ const {
   appRestartsTotal,
   appUptimeSeconds
 } = require('./metrics');
+
+// Import tracing utilities
+const { tracer, createSpan, addSpanEvent, setSpanAttributes } = require('./tracing');
 
 const app = express();
 const PORT = process.env.PORT || 8050;
@@ -30,35 +36,74 @@ app.use(metricsMiddleware);
 
 // Chat endpoint with business metrics - RESOURCE INTENSIVE VERSION
 app.get('/chat', (req, res) => {
+  // Create main span for the entire chat request
+  const mainSpan = createSpan('chat_request', 'http_request');
+  
   const { name } = req.query;
   
+  // Set span attributes
+  setSpanAttributes(mainSpan, {
+    'http.method': 'GET',
+    'http.route': '/chat',
+    'user.name': name || 'unknown',
+    'request.id': Math.random().toString(36).substr(2, 9),
+  });
+  
   if (!name) {
+    addSpanEvent(mainSpan, 'validation_failed', { reason: 'missing_name' });
+    mainSpan.setStatus({ code: 2, message: 'Name parameter is required' });
+    mainSpan.end();
     return res.status(400).json({ error: 'Name parameter is required' });
   }
+  
+  addSpanEvent(mainSpan, 'validation_passed', { user_name: name });
   
   // 🔥 CPU INTENSIVE OPERATIONS
   
   // 1. Heavy computation - Calculate prime numbers
-  const primeCount = calculatePrimes(1000 + Math.floor(Math.random() * 2000)); // 1000-3000 range
+  const primeSpan = createSpan('calculate_primes', 'computation');
+  const primeLimit = 1000 + Math.floor(Math.random() * 2000);
+  setSpanAttributes(primeSpan, { 'prime.limit': primeLimit });
+  
+  const primeCount = calculatePrimes(primeLimit);
+  
+  addSpanEvent(primeSpan, 'primes_calculated', { count: primeCount, limit: primeLimit });
+  primeSpan.end();
   
   // 2. String manipulation - Create large strings and process them
+  const stringSpan = createSpan('string_manipulation', 'computation');
   let largeString = '';
   for (let i = 0; i < 1000; i++) {
     largeString += `Hello ${name} - iteration ${i} - ${Math.random().toString(36)} `;
   }
+  setSpanAttributes(stringSpan, { 'string.length': largeString.length, 'iterations': 1000 });
+  stringSpan.end();
   
   // 3. JSON serialization/parsing (CPU intensive)
+  const jsonSpan = createSpan('json_operations', 'serialization');
   const complexObject = generateComplexObject(name, 500); // 500 nested properties
+  addSpanEvent(jsonSpan, 'object_generated', { properties: 500 });
+  
   const serialized = JSON.stringify(complexObject);
+  addSpanEvent(jsonSpan, 'object_serialized', { size_bytes: serialized.length });
+  
   const parsed = JSON.parse(serialized);
+  addSpanEvent(jsonSpan, 'object_parsed', { keys_count: Object.keys(parsed).length });
+  jsonSpan.end();
   
   // 4. Array operations - Sort large arrays
+  const arraySpan = createSpan('array_operations', 'computation');
   const largeArray = Array.from({length: 5000}, () => Math.random());
+  addSpanEvent(arraySpan, 'array_created', { length: largeArray.length });
+  
   const sortedArray = largeArray.sort((a, b) => b - a); // Reverse sort
+  addSpanEvent(arraySpan, 'array_sorted', { algorithm: 'reverse_sort' });
+  arraySpan.end();
   
   // 🧠 MEMORY INTENSIVE OPERATIONS
   
   // 5. Create temporary large objects (memory pressure)
+  const memorySpan = createSpan('memory_operations', 'memory_allocation');
   const memoryHogs = [];
   for (let i = 0; i < 100; i++) {
     memoryHogs.push({
@@ -68,17 +113,28 @@ app.get('/chat', (req, res) => {
       randomData: Math.random().toString(36).repeat(100)
     });
   }
+  setSpanAttributes(memorySpan, { 'memory.objects_created': memoryHogs.length, 'memory.size_estimate': memoryHogs.length * 1000 });
+  memorySpan.end();
   
   // 6. Simulate database-like operations (more CPU)
+  const dbSpan = createSpan('database_operations', 'database_query');
   const userProfile = simulateUserProfileLookup(name);
+  addSpanEvent(dbSpan, 'user_profile_loaded', { user: name });
+  
   const recommendations = generateRecommendations(userProfile, 50);
+  addSpanEvent(dbSpan, 'recommendations_generated', { count: recommendations.length });
+  dbSpan.end();
   
   // 7. Artificial delay to simulate I/O (but keep CPU busy)
+  const ioSpan = createSpan('io_simulation', 'io_wait');
   const startTime = Date.now();
-  while (Date.now() - startTime < 10 + Math.random() * 20) {
+  const waitTime = 10 + Math.random() * 20;
+  while (Date.now() - startTime < waitTime) {
     // Busy wait with some computation
     Math.sqrt(Math.random() * 1000000);
   }
+  setSpanAttributes(ioSpan, { 'io.wait_time_ms': waitTime });
+  ioSpan.end();
   
   // Simulate user interaction - increment active users
   activeUsers.inc();
@@ -86,8 +142,11 @@ app.get('/chat', (req, res) => {
   // Simulate login success
   userLogins.inc({ success: 'true' });
   
+  addSpanEvent(mainSpan, 'metrics_updated', { active_users: 'incremented', user_logins: 'incremented' });
+  
   // Return enriched response with computed data
-  res.json({ 
+  const responseSpan = createSpan('response_generation', 'response');
+  const response = { 
     message: `Hi ${name}! Welcome to our resource-intensive chat!`,
     stats: {
       primesCalculated: primeCount,
@@ -100,7 +159,23 @@ app.get('/chat', (req, res) => {
     },
     userProfile: userProfile,
     topRecommendations: recommendations.slice(0, 5)
+  };
+  
+  setSpanAttributes(responseSpan, { 
+    'response.size_bytes': JSON.stringify(response).length,
+    'response.recommendations_count': recommendations.length 
   });
+  responseSpan.end();
+  
+  // Complete main span
+  addSpanEvent(mainSpan, 'request_completed', { 
+    status: 'success',
+    response_size: JSON.stringify(response).length 
+  });
+  mainSpan.setStatus({ code: 1, message: 'OK' });
+  mainSpan.end();
+  
+  res.json(response);
 });
 
 // 🔥 HELPER FUNCTIONS FOR RESOURCE CONSUMPTION

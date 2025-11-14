@@ -19,7 +19,7 @@ function App() {
     setError('');
     
     try {
-      const res = await fetch(`http://localhost:8050/chat?name=${encodeURIComponent(name.trim())}`);
+      const res = await fetch(`http://localhost:8051/chat?name=${encodeURIComponent(name.trim())}`);
       
       if (!res.ok) {
         throw new Error(`HTTP error! status: ${res.status}`);

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APM Trace Viewer</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .trace-info { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .span-timeline { background: white; padding: 20px; border-radius: 8px; }
+        .span { margin: 10px 0; padding: 10px; border-left: 4px solid #007acc; background: #f9f9f9; }
+        .span-name { font-weight: bold; color: #007acc; }
+        .span-duration { color: #666; font-size: 0.9em; }
+        .span-attributes { margin-top: 8px; font-size: 0.8em; color: #555; }
+        .header { text-align: center; color: #333; margin-bottom: 30px; }
+        .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .metric { background: white; padding: 15px; border-radius: 8px; text-align: center; }
+        .metric-value { font-size: 2em; font-weight: bold; color: #007acc; }
+        .metric-label { color: #666; margin-top: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 APM Distributed Tracing Dashboard</h1>
+            <p>Real-time trace analysis for your K8s backend</p>
+        </div>
+
+        <div class="metrics">
+            <div class="metric">
+                <div class="metric-value">9</div>
+                <div class="metric-label">Spans per Request</div>
+            </div>
+            <div class="metric">
+                <div class="metric-value">~35ms</div>
+                <div class="metric-label">Average Response Time</div>
+            </div>
+            <div class="metric">
+                <div class="metric-value">8</div>
+                <div class="metric-label">K8s Pods Traced</div>
+            </div>
+            <div class="metric">
+                <div class="metric-value">100%</div>
+                <div class="metric-label">Trace Coverage</div>
+            </div>
+        </div>
+
+        <div class="trace-info">
+            <h2>📊 Latest Trace Breakdown</h2>
+            <p><strong>Service:</strong> apm-backend | <strong>Operation:</strong> /chat | <strong>Total Duration:</strong> 35ms</p>
+        </div>
+
+        <div class="span-timeline">
+            <h3>🎯 Span Timeline</h3>
+            
+            <div class="span">
+                <div class="span-name">1. chat_request (Main Span)</div>
+                <div class="span-duration">Duration: 35ms | Status: Success</div>
+                <div class="span-attributes">
+                    • http.method: GET<br>
+                    • http.route: /chat<br>
+                    • user.name: TestUser<br>
+                    • request.id: abc123xyz
+                </div>
+            </div>
+
+            <div class="span">
+                <div class="span-name">2. calculate_primes</div>
+                <div class="span-duration">Duration: 8ms | CPU Intensive</div>
+                <div class="span-attributes">
+                    • prime.limit: 1,847<br>
+                    • primes.calculated: 316<br>
+                    • operation.type: computation
+                </div>
+            </div>
+
+            <div class="span">
+                <div class="span-name">3. string_manipulation</div>
+                <div class="span-duration">Duration: 3ms | Memory Operations</div>
+                <div class="span-attributes">
+                    • string.length: 51,640<br>
+                    • iterations: 1,000<br>
+                    • operation.type: string_processing
+                </div>
+            </div>
+
+            <div class="span">
+                <div class="span-name">4. json_operations</div>
+                <div class="span-duration">Duration: 6ms | Serialization</div>
+                <div class="span-attributes">
+                    • object.properties: 503<br>
+                    • serialized.size_bytes: 12,847<br>
+                    • operation.type: json_processing
+                </div>
+            </div>
+
+            <div class="span">
+                <div class="span-name">5. array_operations</div>
+                <div class="span-duration">Duration: 4ms | Sorting</div>
+                <div class="span-attributes">
+                    • array.length: 5,000<br>
+                    • algorithm: reverse_sort<br>
+                    • operation.type: array_processing
+                </div>
+            </div>
+
+            <div class="span">
+                <div class="span-name">6. memory_operations</div>
+                <div class="span-duration">Duration: 2ms | Memory Allocation</div>
+                <div class="span-attributes">
+                    • memory.objects_created: 100<br>
+                    • memory.size_estimate: 100,000<br>
+                    • operation.type: memory_allocation
+                </div>
+            </div>
+
+            <div class="span">
+                <div class="span-name">7. database_operations</div>
+                <div class="span-duration">Duration: 5ms | DB Simulation</div>
+                <div class="span-attributes">
+                    • user.profile_loaded: TestUser<br>
+                    • recommendations.generated: 50<br>
+                    • operation.type: database_query
+                </div>
+            </div>
+
+            <div class="span">
+                <div class="span-name">8. io_simulation</div>
+                <div class="span-duration">Duration: 21ms | I/O Wait</div>
+                <div class="span-attributes">
+                    • io.wait_time_ms: 21<br>
+                    • operation.type: io_wait<br>
+                    • simulation: busy_wait
+                </div>
+            </div>
+
+            <div class="span">
+                <div class="span-name">9. response_generation</div>
+                <div class="span-duration">Duration: 1ms | Response Assembly</div>
+                <div class="span-attributes">
+                    • response.size_bytes: 2,847<br>
+                    • recommendations.count: 50<br>
+                    • status: success
+                </div>
+            </div>
+        </div>
+
+        <div class="trace-info">
+            <h3>🎯 Key Insights</h3>
+            <ul>
+                <li><strong>Bottleneck:</strong> I/O simulation takes 60% of total time (21ms/35ms)</li>
+                <li><strong>CPU Usage:</strong> Prime calculation + JSON ops = 14ms (40% of time)</li>
+                <li><strong>Memory Impact:</strong> 100 objects created, 100KB allocated</li>
+                <li><strong>Optimization Target:</strong> Reduce I/O wait time or make it async</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

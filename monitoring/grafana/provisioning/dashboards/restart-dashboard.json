@@ -321,8 +321,8 @@
       "type": "stat",
       "targets": [
         {
-          "expr": "active_users_current{app=\"apm-backend\"}",
-          "legendFormat": "Active Users"
+          "expr": "sum(active_users_current{job=\"kubernetes-pods\"})",
+          "legendFormat": "Total Active Users"
         }
       ],
       "fieldConfig": {
@@ -339,8 +339,8 @@
       "type": "stat",
       "targets": [
         {
-          "expr": "rate(user_logins_total{app=\"apm-backend\"}[5m]) * 60",
-          "legendFormat": "Logins/min"
+          "expr": "sum(rate(user_logins_total{job=\"kubernetes-pods\"}[5m])) * 60",
+          "legendFormat": "Total Logins/min"
         }
       ],
       "fieldConfig": {
@@ -373,6 +373,158 @@
         }
       },
       "gridPos": {"h": 6, "w": 8, "x": 16, "y": 30}
+    },
+    {
+      "id": 17,
+      "title": "🚀 Pod Count (K8s Auto-Scaling)",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "count(up{job=\"kubernetes-pods\"})",
+          "legendFormat": "Active Pods"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "thresholds": {
+            "steps": [
+              {"color": "blue", "value": 0},
+              {"color": "green", "value": 2},
+              {"color": "yellow", "value": 5},
+              {"color": "red", "value": 8}
+            ]
+          },
+          "unit": "short",
+          "min": 0,
+          "max": 10
+        }
+      },
+      "gridPos": {"h": 4, "w": 6, "x": 0, "y": 36}
+    },
+    {
+      "id": 18,
+      "title": "📈 Pod Scaling Timeline",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "count(up{job=\"kubernetes-pods\"})",
+          "legendFormat": "Number of Pods"
+        },
+        {
+          "expr": "avg(cpu_usage_percent{job=\"kubernetes-pods\"}) / 100",
+          "legendFormat": "Average CPU per Pod (%)"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 3,
+            "fillOpacity": 10,
+            "stacking": {"mode": "none"}
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {"id": "byName", "options": "Number of Pods"},
+            "properties": [
+              {"id": "color", "value": {"mode": "fixed", "fixedColor": "blue"}},
+              {"id": "custom.axisPlacement", "value": "left"},
+              {"id": "unit", "value": "short"},
+              {"id": "min", "value": 0},
+              {"id": "max", "value": 10}
+            ]
+          },
+          {
+            "matcher": {"id": "byName", "options": "Average CPU per Pod (%)"},
+            "properties": [
+              {"id": "color", "value": {"mode": "fixed", "fixedColor": "red"}},
+              {"id": "custom.axisPlacement", "value": "right"},
+              {"id": "unit", "value": "percent"},
+              {"id": "min", "value": 0},
+              {"id": "max", "value": 100}
+            ]
+          }
+        ]
+      },
+      "gridPos": {"h": 8, "w": 12, "x": 6, "y": 36}
+    },
+    {
+      "id": 19,
+      "title": "🎯 HPA Scaling Events",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "deriv(count(up{job=\"kubernetes-pods\"})[2m:])",
+          "legendFormat": "Pod Scaling Rate"
+        },
+        {
+          "expr": "count(up{job=\"kubernetes-pods\"})",
+          "legendFormat": "Current Pod Count"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "fixed", "fixedColor": "orange"},
+          "custom": {
+            "drawStyle": "bars",
+            "lineWidth": 1,
+            "fillOpacity": 80
+          },
+          "unit": "short"
+        }
+      },
+      "gridPos": {"h": 4, "w": 6, "x": 18, "y": 36}
+    },
+    {
+      "id": 20,
+      "title": "📊 CPU Usage Per Pod",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "cpu_usage_percent{app=\"apm-backend\"}",
+          "legendFormat": "Pod {{instance}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 5
+          },
+          "unit": "percent",
+          "max": 100
+        }
+      },
+      "gridPos": {"h": 6, "w": 12, "x": 0, "y": 40}
+    },
+    {
+      "id": 21,
+      "title": "⚖️ Load Distribution",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "rate(http_requests_total{app=\"apm-backend\"}[5m])",
+          "legendFormat": "{{instance}} - {{route}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "stacking": {"mode": "normal"}
+          },
+          "unit": "reqps"
+        }
+      },
+      "gridPos": {"h": 6, "w": 12, "x": 12, "y": 40}
     }
   ],
   "time": {"from": "now-1h", "to": "now"},
