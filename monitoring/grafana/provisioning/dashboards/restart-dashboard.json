@@ -321,7 +321,7 @@
       "type": "stat",
       "targets": [
         {
-          "expr": "sum(active_users_current{job=\"kubernetes-pods\"})",
+          "expr": "sum(active_users_current{job=\"apm-backend\"})",
           "legendFormat": "Total Active Users"
         }
       ],
@@ -339,7 +339,7 @@
       "type": "stat",
       "targets": [
         {
-          "expr": "sum(rate(user_logins_total{job=\"kubernetes-pods\"}[5m])) * 60",
+          "expr": "sum(rate(user_logins_total{job=\"apm-backend\"}[5m])) * 60",
           "legendFormat": "Total Logins/min"
         }
       ],
@@ -380,7 +380,7 @@
       "type": "stat",
       "targets": [
         {
-          "expr": "count(up{job=\"kubernetes-pods\"})",
+          "expr": "count(up{job=\"apm-backend\"})",
           "legendFormat": "Active Pods"
         }
       ],
@@ -408,11 +408,11 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "count(up{job=\"kubernetes-pods\"})",
+          "expr": "count(up{job=\"apm-backend\"})",
           "legendFormat": "Number of Pods"
         },
         {
-          "expr": "avg(cpu_usage_percent{job=\"kubernetes-pods\"}) / 100",
+          "expr": "avg(cpu_usage_percent{job=\"apm-backend\"}) / 100",
           "legendFormat": "Average CPU per Pod (%)"
         }
       ],
@@ -457,11 +457,11 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "deriv(count(up{job=\"kubernetes-pods\"})[2m:])",
+          "expr": "deriv(count(up{job=\"apm-backend\"})[2m:])",
           "legendFormat": "Pod Scaling Rate"
         },
         {
-          "expr": "count(up{job=\"kubernetes-pods\"})",
+          "expr": "count(up{job=\"apm-backend\"})",
           "legendFormat": "Current Pod Count"
         }
       ],
