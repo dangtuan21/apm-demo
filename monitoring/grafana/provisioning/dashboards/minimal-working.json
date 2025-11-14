@@ -1,0 +1,41 @@
+{
+  "id": null,
+  "title": "🔧 Minimal Working Tracing",
+  "tags": ["tracing", "minimal"],
+  "timezone": "browser",
+  "panels": [
+    {
+      "id": 1,
+      "title": "📋 Trace Table",
+      "type": "table",
+      "targets": [
+        {
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "query": "{ .service.name = \"apm-backend\" }",
+          "refId": "A"
+        }
+      ],
+      "gridPos": {"h": 12, "w": 24, "x": 0, "y": 0},
+      "options": {
+        "showHeader": true
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "displayMode": "table"
+          }
+        }
+      }
+    }
+  ],
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "refresh": "5s",
+  "schemaVersion": 27,
+  "version": 1
+}

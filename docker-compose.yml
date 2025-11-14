@@ -42,14 +42,16 @@ services:
     container_name: apm-tempo
     command: [ "-config.file=/etc/tempo.yaml" ]
     volumes:
-      - ./monitoring/tempo-simple.yaml:/etc/tempo.yaml
+      - ./monitoring/tempo-final.yaml:/etc/tempo.yaml
     ports:
-      - "3200:3200"   # Tempo
-      - "4317:4317"   # OTLP gRPC receiver
-      - "4318:4318"   # OTLP HTTP receiver
+      - "0.0.0.0:3200:3200"   # Tempo - bind to all interfaces
+      - "0.0.0.0:4317:4317"   # OTLP gRPC receiver
+      - "0.0.0.0:4318:4318"   # OTLP HTTP receiver
     networks:
       - monitoring
-    user: "0:0"  # Run as root to avoid permission issues
+    tmpfs:
+      - /tmp/tempo:noexec,nosuid,size=1g
+    user: "0"  # Run as root to fix permissions
 
 volumes:
   prometheus_data:

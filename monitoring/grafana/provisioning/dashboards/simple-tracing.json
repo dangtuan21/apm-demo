@@ -1,0 +1,47 @@
+{
+  "id": null,
+  "title": "✅ Simple Tracing Dashboard",
+  "tags": ["tracing", "tempo", "working"],
+  "timezone": "browser",
+  "panels": [
+    {
+      "id": 1,
+      "title": "🎯 Recent Traces",
+      "type": "table",
+      "targets": [
+        {
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "query": "{ .service.name = \"apm-backend\" }",
+          "refId": "A"
+        }
+      ],
+      "gridPos": {"h": 12, "w": 24, "x": 0, "y": 0}
+    },
+    {
+      "id": 2,
+      "title": "💬 Chat Traces Only",
+      "type": "table", 
+      "targets": [
+        {
+          "datasource": {
+            "type": "tempo",
+            "uid": "tempo"
+          },
+          "query": "{ .service.name = \"apm-backend\" && .http.route = \"/chat\" }",
+          "refId": "A"
+        }
+      ],
+      "gridPos": {"h": 12, "w": 24, "x": 0, "y": 12}
+    }
+  ],
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "refresh": "5s",
+  "schemaVersion": 27,
+  "version": 1
+}

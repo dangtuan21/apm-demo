@@ -4,9 +4,9 @@ const { getNodeAutoInstrumentations } = require('@opentelemetry/auto-instrumenta
 const { OTLPTraceExporter } = require('@opentelemetry/exporter-trace-otlp-http');
 const opentelemetry = require('@opentelemetry/api');
 
-// Configure OTLP exporter for K8s Tempo
+// Configure OTLP exporter for local Tempo
 const otlpExporter = new OTLPTraceExporter({
-  url: 'http://localhost:3200/v1/traces',
+  url: 'http://192.168.1.184:4318/v1/traces',
   headers: {},
 });
 

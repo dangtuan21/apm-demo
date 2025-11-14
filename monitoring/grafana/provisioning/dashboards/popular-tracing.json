@@ -1,0 +1,190 @@
+{
+  "id": null,
+  "title": "🔥 Popular Tracing Dashboard",
+  "tags": ["tracing", "popular", "apm"],
+  "timezone": "browser",
+  "panels": [
+    {
+      "id": 1,
+      "title": "📊 Recent Traces",
+      "type": "table",
+      "targets": [
+        {
+          "datasource": {"type": "tempo", "uid": "tempo"},
+          "query": "{ .service.name = \"apm-backend\" }",
+          "refId": "A"
+        }
+      ],
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+    },
+    {
+      "id": 2,
+      "title": "🚀 Slowest Traces (>20ms)",
+      "type": "table",
+      "targets": [
+        {
+          "datasource": {"type": "tempo", "uid": "tempo"},
+          "query": "{ .service.name = \"apm-backend\" && duration > 20ms }",
+          "refId": "A"
+        }
+      ],
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+    },
+    {
+      "id": 3,
+      "title": "💬 Chat Endpoint Traces",
+      "type": "table",
+      "targets": [
+        {
+          "datasource": {"type": "tempo", "uid": "tempo"},
+          "query": "{ .service.name = \"apm-backend\" && .http.route = \"/chat\" }",
+          "refId": "A"
+        }
+      ],
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+    },
+    {
+      "id": 4,
+      "title": "🔥 Error Traces (4xx/5xx)",
+      "type": "table",
+      "targets": [
+        {
+          "datasource": {"type": "tempo", "uid": "tempo"},
+          "query": "{ .service.name = \"apm-backend\" && .http.status_code >= 400 }",
+          "refId": "A"
+        }
+      ],
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+    },
+    {
+      "id": 5,
+      "title": "⚡ Fast Traces (<10ms)",
+      "type": "table",
+      "targets": [
+        {
+          "datasource": {"type": "tempo", "uid": "tempo"},
+          "query": "{ .service.name = \"apm-backend\" && duration < 10ms }",
+          "refId": "A"
+        }
+      ],
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16}
+    },
+    {
+      "id": 6,
+      "title": "🧮 CPU Intensive Spans",
+      "type": "table",
+      "targets": [
+        {
+          "datasource": {"type": "tempo", "uid": "tempo"},
+          "query": "{ .service.name = \"apm-backend\" && .span.name = \"calculate_primes\" }",
+          "refId": "A"
+        }
+      ],
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16}
+    },
+    {
+      "id": 7,
+      "title": "👥 Traces by User",
+      "type": "table",
+      "targets": [
+        {
+          "datasource": {"type": "tempo", "uid": "tempo"},
+          "query": "{ .service.name = \"apm-backend\" && .user.name != \"\" }",
+          "refId": "A"
+        }
+      ],
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 24}
+    },
+    {
+      "id": 8,
+      "title": "💾 Database Operations",
+      "type": "table",
+      "targets": [
+        {
+          "datasource": {"type": "tempo", "uid": "tempo"},
+          "query": "{ .service.name = \"apm-backend\" && .span.name = \"database_operations\" }",
+          "refId": "A"
+        }
+      ],
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 24}
+    },
+    {
+      "id": 9,
+      "title": "📈 Request Volume by Endpoint",
+      "type": "stat",
+      "targets": [
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "expr": "sum by (route) (rate(http_requests_total{job=\"apm-backend\"}[5m]))",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "color": {"mode": "palette-classic"}
+        }
+      },
+      "gridPos": {"h": 6, "w": 8, "x": 0, "y": 32}
+    },
+    {
+      "id": 10,
+      "title": "⏱️ Average Response Time",
+      "type": "stat",
+      "targets": [
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "expr": "avg(rate(http_request_duration_seconds_sum{job=\"apm-backend\"}[5m]) / rate(http_request_duration_seconds_count{job=\"apm-backend\"}[5m]))",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "color": {"mode": "thresholds"},
+          "thresholds": {
+            "steps": [
+              {"color": "green", "value": 0},
+              {"color": "yellow", "value": 0.1},
+              {"color": "red", "value": 0.5}
+            ]
+          }
+        }
+      },
+      "gridPos": {"h": 6, "w": 8, "x": 8, "y": 32}
+    },
+    {
+      "id": 11,
+      "title": "🎯 Success Rate",
+      "type": "stat",
+      "targets": [
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "expr": "sum(rate(http_requests_total{job=\"apm-backend\",status!~\"4..|5..\"}[5m])) / sum(rate(http_requests_total{job=\"apm-backend\"}[5m])) * 100",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "color": {"mode": "thresholds"},
+          "thresholds": {
+            "steps": [
+              {"color": "red", "value": 0},
+              {"color": "yellow", "value": 95},
+              {"color": "green", "value": 99}
+            ]
+          }
+        }
+      },
+      "gridPos": {"h": 6, "w": 8, "x": 16, "y": 32}
+    }
+  ],
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "refresh": "5s",
+  "schemaVersion": 27,
+  "version": 1
+}

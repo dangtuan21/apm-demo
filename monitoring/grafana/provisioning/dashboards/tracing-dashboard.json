@@ -10,7 +10,7 @@
         "type": "nodeGraph",
         "targets": [
           {
-            "expr": "{__name__=~\"traces\"}",
+            "query": "{ .service.name = \"apm-backend\" }",
             "refId": "A",
             "datasource": {
               "type": "tempo",
@@ -30,10 +30,10 @@
       {
         "id": 2,
         "title": "🎯 Recent Traces",
-        "type": "traces",
+        "type": "table",
         "targets": [
           {
-            "query": "{service.name=\"apm-backend\"}",
+            "query": "{ .service.name = \"apm-backend\" }",
             "refId": "A",
             "datasource": {
               "type": "tempo",
@@ -49,11 +49,11 @@
         "type": "histogram",
         "targets": [
           {
-            "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))",
+            "query": "{ .service.name = \"apm-backend\" }",
             "refId": "A",
             "datasource": {
-              "type": "prometheus",
-              "uid": "prometheus"
+              "type": "tempo",
+              "uid": "tempo"
             }
           }
         ],
@@ -77,11 +77,11 @@
         "type": "stat",
         "targets": [
           {
-            "expr": "sum(rate(http_requests_total{status=~\"4..|5..\"}[5m])) / sum(rate(http_requests_total[5m])) * 100",
+            "query": "{ .service.name = \"apm-backend\" && .http.status_code >= 400 }",
             "refId": "A",
             "datasource": {
-              "type": "prometheus",
-              "uid": "prometheus"
+              "type": "tempo",
+              "uid": "tempo"
             }
           }
         ],
@@ -105,7 +105,7 @@
         "type": "timeseries",
         "targets": [
           {
-            "query": "{service.name=\"apm-backend\"} | json | duration > 0",
+            "query": "{ .service.name = \"apm-backend\" }",
             "refId": "A",
             "datasource": {
               "type": "tempo",

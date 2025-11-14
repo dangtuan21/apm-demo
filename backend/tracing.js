@@ -3,9 +3,9 @@ const { getNodeAutoInstrumentations } = require('@opentelemetry/auto-instrumenta
 const { OTLPTraceExporter } = require('@opentelemetry/exporter-trace-otlp-http');
 const opentelemetry = require('@opentelemetry/api');
 
-// Configure OTLP exporter for K8s Tempo (internal service)
+// Configure OTLP exporter for local Tempo (accessible from K8s via host network)
 const otlpExporter = new OTLPTraceExporter({
-  url: process.env.OTLP_ENDPOINT || 'http://tempo:4318/v1/traces',
+  url: process.env.OTLP_ENDPOINT || 'http://192.168.1.184:4318/v1/traces',
   headers: {},
 });
 
@@ -17,6 +17,30 @@ const sdk = new NodeSDK({
       // Disable some instrumentations if needed
       '@opentelemetry/instrumentation-fs': {
         enabled: false,
+      },
+      // Configure Express instrumentation to capture status codes
+      '@opentelemetry/instrumentation-express': {
+        enabled: true,
+        requestHook: (span, info) => {
+          span.setAttributes({
+            'http.method': info.request.method,
+            'http.url': info.request.url,
+            'http.target': info.request.url,
+          });
+        },
+        responseHook: (span, info) => {
+          const statusCode = info.response.statusCode;
+          span.setAttributes({
+            'http.status_code': statusCode,
+            'http.response.status_code': statusCode,
+          });
+          if (statusCode >= 400) {
+            span.setStatus({
+              code: opentelemetry.SpanStatusCode.ERROR,
+              message: `HTTP ${statusCode}`,
+            });
+          }
+        },
       },
     }),
   ],
