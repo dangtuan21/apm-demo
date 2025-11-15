@@ -44,10 +44,14 @@ echo "1) Load Test (Gradual ramp-up, 16 minutes)"
 echo "2) Stress Test (High load, breaking point, 9 minutes)"
 echo "3) Spike Test (Sudden traffic spikes, 2 minutes)"
 echo "4) Endurance Test (Long duration, 34 minutes)"
-echo "5) Run All Tests (Sequential execution)"
-echo "6) Custom Test (specify your own file)"
+echo "5) Advanced Scenarios (Multi-scenario realistic testing, 14 minutes)"
+echo "6) Business Workflow (Customer journey testing, 7 minutes)"
+echo "7) Chaos Testing (Resilience and recovery testing, 15 minutes)"
+echo "8) Run All Basic Tests (1-4 Sequential execution)"
+echo "9) Run All Advanced Tests (5-7 Sequential execution)"
+echo "10) Custom Test (specify your own file)"
 
-read -p "Enter your choice (1-6): " choice
+read -p "Enter your choice (1-10): " choice
 
 case $choice in
     1)
@@ -63,7 +67,16 @@ case $choice in
         run_test "Endurance Test" "endurance-test.js" "Long-duration test for memory leaks"
         ;;
     5)
-        echo "🔄 Running all tests sequentially..."
+        run_test "Advanced Scenarios" "advanced-scenarios.js" "Multi-scenario realistic user behavior testing"
+        ;;
+    6)
+        run_test "Business Workflow" "business-workflow.js" "Customer journey and business process testing"
+        ;;
+    7)
+        run_test "Chaos Testing" "chaos-testing.js" "System resilience and recovery testing"
+        ;;
+    8)
+        echo "🔄 Running all basic tests sequentially..."
         run_test "Load Test" "load-test.js" "Gradual load increase"
         sleep 30  # Cool down between tests
         run_test "Stress Test" "stress-test.js" "High load testing"
@@ -71,9 +84,18 @@ case $choice in
         run_test "Spike Test" "spike-test.js" "Sudden traffic spikes"
         sleep 30
         run_test "Endurance Test" "endurance-test.js" "Long-duration testing"
-        echo "🎉 All tests completed!"
+        echo "🎉 All basic tests completed!"
         ;;
-    6)
+    9)
+        echo "🚀 Running all advanced tests sequentially..."
+        run_test "Advanced Scenarios" "advanced-scenarios.js" "Multi-scenario testing"
+        sleep 60  # Longer cool down for advanced tests
+        run_test "Business Workflow" "business-workflow.js" "Business process testing"
+        sleep 60
+        run_test "Chaos Testing" "chaos-testing.js" "Chaos engineering testing"
+        echo "🎉 All advanced tests completed!"
+        ;;
+    10)
         read -p "Enter the test file name: " custom_file
         if [ -f "$custom_file" ]; then
             run_test "Custom Test" "$custom_file" "User-defined test"
