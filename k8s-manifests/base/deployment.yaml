@@ -5,7 +5,7 @@ metadata:
   labels:
     app: apm-backend
 spec:
-  replicas: 3
+  replicas: 3  # Will be overridden by environment-specific configs
   selector:
     matchLabels:
       app: apm-backend
@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: apm-backend:local
+        image: 741543764817.dkr.ecr.us-east-1.amazonaws.com/apm-backend:latest
         ports:
         - containerPort: 8050
         env:
@@ -24,13 +24,17 @@ spec:
           value: "8050"
         - name: NODE_ENV
           value: "production"
+        - name: SERVICE_NAME
+          value: "apm-backend"
+        - name: SERVICE_VERSION
+          value: "1.0.0"
         resources:
           requests:
             memory: "128Mi"
-            cpu: "100m"      # 0.1 CPU core
+            cpu: "100m"
           limits:
             memory: "512Mi"
-            cpu: "500m"      # 0.5 CPU core max
+            cpu: "500m"
         livenessProbe:
           httpGet:
             path: /health
@@ -64,20 +68,3 @@ spec:
     targetPort: 8050
     protocol: TCP
   type: ClusterIP
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: apm-backend-loadbalancer
-  labels:
-    app: apm-backend
-spec:
-  selector:
-    app: apm-backend
-  ports:
-  - name: http
-    port: 8050
-    targetPort: 8050
-    protocol: TCP
-  type: LoadBalancer

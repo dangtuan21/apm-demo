@@ -1,0 +1,9 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: apm-backend-ingress
+  annotations:
+    alb.ingress.kubernetes.io/tags: Environment=prod,Project=apm-demo
+    alb.ingress.kubernetes.io/load-balancer-name: apm-demo-prod-alb
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:273204284763:certificate/your-cert-arn
+    alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-TLS-1-2-2017-01

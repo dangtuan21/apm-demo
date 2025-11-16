@@ -1,0 +1,7 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: apm-backend-ingress
+  annotations:
+    alb.ingress.kubernetes.io/tags: Environment=dev,Project=apm-demo
+    alb.ingress.kubernetes.io/load-balancer-name: apm-demo-dev-alb
